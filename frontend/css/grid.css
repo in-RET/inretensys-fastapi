@@ -1,0 +1,59 @@
+.header { 
+    grid-area: header;
+    text-align: center;
+}
+
+.header-left {
+    grid-area: header-left;
+    padding: 20px;
+}
+
+.header-right {
+    grid-area: header-right;
+    padding: 20px;
+}
+
+.footer { 
+    grid-area: footer;
+    text-align: center;
+}
+
+.content { 
+    grid-area: content;
+}
+
+.toolbox { 
+    grid-area: toolbox;
+    cursor: pointer;
+}
+
+.projectlist { 
+    grid-area: projectlist;
+}
+
+html, body {
+    height: 99%;
+    width: 100%;
+    margin: auto;
+}
+
+.gridwrapper {
+    display: grid;
+    grid-template-areas:
+      'header-left header header-right'
+      'projectlist content toolbox'
+      'footer footer footer';
+    grid-template-rows: 100px auto 60px;
+    grid-template-columns: 300px auto 300px;
+    background-color: lightgray;
+    padding: 10px;
+    width: 100% - 20px;
+    height: 100%;
+    font-size: 14pt;
+    font-family: Arial, Helvetica, sans-serif;
+}
+  
+.gridwrapper > div {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+

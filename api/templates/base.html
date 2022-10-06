@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}Index{% endblock %} - Flask Test</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='stylesheet.css') }}">
+</head>
+<body>
+  <p id="header">FastAPI for InRetEnsys</p>
+
+  <nav>
+    <ul id="navigation">
+      {% for item in navigation %}
+        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <section class="content">
+    <header>
+      {% block header %}
+      <h1>Hier steht der Header</h1>
+      {% endblock %}
+    </header>
+    <content>
+      {% block content %}
+        <h3>Hier steht content.</h3>
+      {% endblock %}
+    </content>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ data['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <h1>JSON-Data</h1>
+    <form method="post">
+      <ul>
+        {% for key in data %}
+          {% if key == 'properties' %}
+            {% for propertykey in data[key] %}
+              <li>
+                <h3>{{ data[key][propertykey]['title'] }}</h3> 
+                <label for="{{ data[key][propertykey]['title'] }}">{{ data[key][propertykey]['description'] }}<br></label>
+
+                {% if data[key][propertykey]['type'] == 'number' or data[key][propertykey]['type'] == 'integer' %}
+                  <label>min: {{ data[key][propertykey]['minimum'] }}</label><br>
+                  <label>max: {{ data[key][propertykey]['maximum'] }}</label><br>
+                  <input  type="range" 
+                          name="{{ data[key][propertykey]['title'] }}" 
+                          min="{{ data[key][propertykey]['minimum'] }}" 
+                          max="{{ data[key][propertykey]['maximum'] }}" 
+                          step="{{ data[key][propertykey]['step'] }}" 
+                          value="{{ request.form[data[key][propertykey]['title']] }}"
+                          oninput="this.nextElementSibling.value = this.value">
+                  <output>0</output>
+                {% elif data[key][propertykey]['type'] == 'string' %}
+                  <input type="text" name="{{ data[key][propertykey]['title'] }}" value="{{ request.form[data[key][propertykey]['title']] }}">
+                {% elif data[key][propertykey]['type'] == 'boolean' %}
+                  <input type="checkbox" name="{{ data[key][propertykey]['title'] }}" value="{{ request.form[data[key][propertykey]['title']] }}">
+                {% else %}
+                  {{ data[key][propertykey] }}</li>
+                {% endif %}
+                {% if not loop.last %}
+                  <hr>
+                {% endif %}
+            {% endfor %} 
+          {% elif key == 'definitions' or key == 'title' or key == 'type' %}  
+            <!-- do nothing -->
+          {% else %}
+            <li>{{ key }} : {{ data[key] }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+      <input type="submit" value="Speichern">
+    </form>
+{% endblock %}

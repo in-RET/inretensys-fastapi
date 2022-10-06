@@ -1,0 +1,7 @@
+# Ordner
+.idea
+__pycache__
+venv/
+
+# Mac spezifische Dateien
+.DS_Store

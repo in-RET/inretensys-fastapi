@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: api/.
+    image: inretensys-fastapi-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/api
+
+
+  frontend:
+    build: frontend/.
+    image: http-server-frontend
+    #hostname: frontend.localhost.local
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/local/apache2/htdocs/
+
