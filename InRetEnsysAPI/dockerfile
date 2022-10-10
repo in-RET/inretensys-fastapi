@@ -1,6 +1,6 @@
 FROM python:3.9-slim-bullseye
 
-WORKDIR /api
+WORKDIR /InRetEnsysAPI
 
 COPY ./requirements.txt /requirements.txt
 COPY ./external/ /external
@@ -9,8 +9,8 @@ RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir --upgrade /external/InRetEnsys-0.2a2-py3-none-any.whl
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 
-COPY ./ /api/
+COPY ./ /InRetEnsysAPI/
 
 WORKDIR /
 
-CMD [ "uvicorn", "api.api:app", "--host", "0.0.0.0", "--port", "8000" ]
+CMD [ "uvicorn", "InRetEnsysAPI.api:app", "--host", "0.0.0.0", "--port", "8000" ]

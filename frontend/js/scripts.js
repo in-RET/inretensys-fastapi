@@ -31,9 +31,8 @@ async function getSchema(url){
                     prop_info.innerText = json_schema.properties[key][childkey];
     
                     if (json_schema.hasOwnProperty("required")){
-                        console.log("required vorhanden: " + json_schema.properties[key])
-                        if (json_schema.required.includes(json_schema.properties[key])){
-                            prop_info.innerText = prop_info.innerText + "(Erforderlich)";
+                        if (json_schema.required.includes(json_schema.properties[key][childkey].toLowerCase())){
+                            prop_info.innerText = prop_info.innerText + "*";
                         }
                     }
 
@@ -56,6 +55,15 @@ async function getSchema(url){
                             form.appendChild(prop_datafield)
                             break;
 
+                        case "object":
+                            prop_datafield = document.createElement("input")
+                            prop_datafield.type = "text"
+                            prop_datafield.name = json_schema.properties[key]["title"]
+                            prop_datafield.value = "Object Placeholder"
+                            
+                            form.appendChild(prop_datafield)
+                            break;
+
                         case "boolean":
                             prop_datafield = document.createElement("input")
                             prop_datafield.type = "checkbox"
@@ -64,16 +72,36 @@ async function getSchema(url){
                             form.appendChild(prop_datafield)
                             break;
 
-                        case "number" || "integer":
+                        case "number":
                             prop_datafield = document.createElement("input")
                             prop_datafield.type = "range"
                             prop_datafield.min = json_schema.properties[key]["minimum"]
                             prop_datafield.max = json_schema.properties[key]["maximum"]
                             prop_datafield.step = json_schema.properties[key]["step"]
                             prop_datafield.name = json_schema.properties[key]["title"]
+                            prop_datafield.oninput = function() {this.nextElementSibling.value = this.value}
 
-                            form.appendChild(prop_datafield)
+                            prop_outputfield = document.createElement("output")
+                            prop_outputfield.innerText = 0
 
+                            form.appendChild(prop_datafield)   
+                            form.appendChild(prop_outputfield)
+                            break;                        
+                        
+                        case "integer":
+                            prop_datafield = document.createElement("input")
+                            prop_datafield.type = "range"
+                            prop_datafield.min = json_schema.properties[key]["minimum"]
+                            prop_datafield.max = json_schema.properties[key]["maximum"]
+                            prop_datafield.step = json_schema.properties[key]["step"]
+                            prop_datafield.name = json_schema.properties[key]["title"]
+                            prop_datafield.oninput = function() {this.nextElementSibling.value = this.value}
+
+                            prop_outputfield = document.createElement("output")
+                            prop_outputfield.innerText = 0
+
+                            form.appendChild(prop_datafield)   
+                            form.appendChild(prop_outputfield)
                             break;
                     }
                     break;

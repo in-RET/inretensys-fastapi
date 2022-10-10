@@ -1,7 +1,7 @@
 from InRetEnsys import *
 
-from api import app
-from api.helpers import CreateComponentsList
+from InRetEnsysAPI import app
+from InRetEnsysAPI.helpers import CreateComponentsList
 
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
