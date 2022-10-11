@@ -14,6 +14,12 @@ defineProps({
       You’ve successfully created a project with
       <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
       <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
+      <button class="btn btn-primary" data-bs-target="#collapseTarget" data-bs-toggle="collapse">
+        Bootstrap collapse
+      </button>
+      <div class="collapse py-2" id="collapseTarget">
+        This is the toggle-able content!
+      </div>
     </h3>
   </div>
 </template>
@@ -35,6 +41,7 @@ h3 {
 }
 
 @media (min-width: 1024px) {
+
   .greetings h1,
   .greetings h3 {
     text-align: left;
