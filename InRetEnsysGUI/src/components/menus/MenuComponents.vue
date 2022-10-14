@@ -1,54 +1,43 @@
 <script setup>
+import { ref } from 'vue'
 
-function getComponentSchema(componentName) {
-    fetch("/api/getComponentSchema/" + componentName)
-    .then(response => {
-        return response.json()
-    })
-    .then(data => {
-        let workingarea = document.getElementById("workingarea")
+async function getComponentSchema(componentName) {
+    let response =  await fetch("/api/getComponentSchema/" + componentName)
+    let data = await response.json()
 
-        workingarea.innerText = data
-    })
+    // console.log(data)
 
+    // let workingarea = document.getElementById("workingarea")
+    // workingarea.innerHTML = data
 }
 
-function getElementList() {
-    fetch("/api/getComponentsList")
-    .then(response => {
-        return response.json()
-    })
-    .then(data => {
-        console.log(data.components)
+function addGraphNode(name) {
+    console.log("addGraphNode")    
+}
 
-        let elements = data.components
+let elements = null
+let isFetching = true
 
-        for (let id in elements) {
-            let listGroup = document.getElementById("componentslist")
+try {
+    let response = await fetch("/api/getComponentsList")
+    let data = await response.json()
 
-            var newBtn = document.createElement("button")
-            newBtn.classList.add("list-group-item")
-            newBtn.classList.add("list-group-item-action")
-            newBtn.innerText = elements[id]
-
-            newBtn.onclick = function() { getComponentSchema(elements[id]) }
-
-            listGroup.appendChild(newBtn)
-        }
-    })
-    .catch(response => {
-        console.error(response)
-    });
-
-} 
-
-getElementList()
+    elements = ref(data.components)
+    isFetching = false
+}
+catch (exception) {
+    console.error(exception)
+}
 
 </script>
 
 <template>
-    <p>Komponenten:</p>
-    <div class="list-group me-2" id="componentslist"></div>
+    <div v-if="!isFetching">
+        <p>Komponenten:</p>
+        <div class="list-group me-2" >
+            <button v-for="elem in elements" @click="getComponentSchema(elem)" class="list-group-item list-group-item-action">{{ elem }}</button>
+        </div>
+    </div>
 </template>
 
 <style>

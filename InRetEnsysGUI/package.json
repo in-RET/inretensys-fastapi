@@ -8,9 +8,16 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@jsplumb/browser-ui": "^5.12.2",
+    "@jsplumb/common": "^5.12.2",
+    "@jsplumb/connector-bezier": "^5.12.2",
+    "@jsplumb/connector-flowchart": "^5.12.2",
+    "@jsplumb/core": "^5.12.2",
+    "@jsplumb/util": "^5.12.2",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.2",
-    "vue": "^3.2.38"
+    "vue": "^3.2.38",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
