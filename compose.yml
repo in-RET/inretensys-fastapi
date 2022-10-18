@@ -1,21 +1,9 @@
 services:
-
   backend:
     container_name: fastapi-backend
-    build: InRetEnsysAPI/.
+    build: api/.
     image: inretensys-fastapi-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./InRetEnsysAPI:/InRetEnsysAPI
-
-
-  #frontend:
-  #  container_name: vue-frontend
-  #  build: InRetEnsysGUI/.
-  #  image: inretensys-vue-frontend
-  #  ports:
-  #    - "5173:5173"
-  #  volumes:
-  #    - ./InRetEnsysGUI/:/var/www/html/app
-      
+      - ./api:/api
