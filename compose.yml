@@ -1,9 +1,10 @@
 services:
   backend:
-    container_name: fastapi-backend
+    container_name: inretensys-api
     build: api/.
     image: inretensys-fastapi-backend
     ports:
       - "8000:8000"
     volumes:
       - ./api:/api
+      - ./dockerfiles:/dockerfiles

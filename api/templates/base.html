@@ -1,34 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title>{% block title %}Index{% endblock %} - Flask Test</title>
+  <title>{% block title %}Index{% endblock %} - FastAPI</title>
   <link rel="stylesheet" href="{{ url_for('static', path='stylesheet.css') }}">
-  
-  <script src="https://download.jsplumbtoolkit.com/repository/jsplumb-eval/"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
-  <p id="header">FastAPI for InRetEnsys</p>
+  <div class="pagewrapper">
+    <div class="container">
+      <!-- header -->
+      <div class="row header">
+        <p class="center">
+          <img src="{{ url_for('static', path='logo_inret.jpg') }}" alt="inret logo" class="logo" width="200" />
+          FastAPI for InRetEnsys
+        </p>
+      </div>
 
-  <nav>
-    <ul id="navigation">
-      {% for item in navigation %}
-        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
-      {% endfor %}
-    </ul>
-  </nav>
+      <!-- content -->
+      <div class="row">
+        <div class="col">
+          <h2>Binär</h2>
+          <form action="/uploadFileBinary" enctype="multipart/form-data" method="post">
+            <div class="mb-3">
+              <label for="datafile" class="form-label">Konfigurationsdatei</label>
+              <input class="form-control" name="datafile" type="file" id="datafile" multiple><br />
+              <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
+            </div>
+          </form>
+        </div>
+        <div class="col">
+          <h2>JSON</h2>
+          <form action="/uploadFileJson" enctype="multipart/form-data" method="post">
+            <div class="mb-3">
+              <label for="datafile" class="form-label">Konfigurationsdatei</label>
+              <input class="form-control" name="datafile" type="file" id="datafile" multiple><br />
+              <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        {% block content %}
 
-  <section class="content">
-    <header>
-      {% block header %}
-      <h1>Hier steht der Header</h1>
-      {% endblock %}
-    </header>
-    <content>
-      {% block content %}
-        <h3>Hier steht content.</h3>
-      {% endblock %}
-    </content>
-  </section>
+        {% endblock %}
+      </div>
+      <!-- footer -->
+      <div class="row footer">
+        <p class="hs-green">Copyright 2022 - Institut für regnerative Energietechnik</p>
+      </div>
 
+    </div>
+  </div>
 </body>
+
 </html>
