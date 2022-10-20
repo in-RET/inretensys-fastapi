@@ -1,8 +1,8 @@
 # Ordner
 .idea
 __pycache__
-venv/
-debugging/
+venv
+debugging
 *.lic
 
 # Logs
