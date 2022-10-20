@@ -2,7 +2,7 @@
 .idea
 __pycache__
 venv/
-dockerfiles*
+debugging/
 *.lic
 
 # Logs
