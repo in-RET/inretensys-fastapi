@@ -3,6 +3,7 @@
 __pycache__
 venv
 debugging
+simulationen
 *.lic
 
 # Logs

@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from enum import Enum
+from typing import List
 
 origins = [
     "http://localhost",
@@ -76,82 +76,94 @@ async def get_component_schema(selectedType):
 
 
 @app.post("/uploadFileBinary")
-def upload_file(request: Request, datafile: UploadFile = File(...)):
-    content = datafile.file.read()
-    return run_simulation(request, input=content, ftype="bin")
+async def upload_file(request: Request, datafiles: List[UploadFile] = File(...)):
+    filelist = []
+    
+    for datafile in datafiles:
+        filelist.append(await datafile.read())
+
+    return run_simulation(request, input=filelist, ftype="bin")
 
 
 @app.post("/uploadFileJson")
-def upload_file(request: Request, datafile: UploadFile = File(...)):
-    content = datafile.file.read()
-    return run_simulation(request, input=content, ftype="json")
+async def upload_file(request: Request, datafiles: List[UploadFile] = File(...)):
+    filelist = []
+    
+    for datafile in datafiles:
+        filelist.append(await datafile.read())
+
+    return run_simulation(request, input=filelist, ftype="json")
 
 
 def generate_random_folder():
     return str(uuid.uuid4().hex)
 
 @app.post("/runSimulation")
-def run_simulation(request: Request, input=None, ftype=None, project="debugging") -> Response:
+def run_simulation(request: Request, input=None, ftype=None, project="simulationen") -> Response:
     if input is not None:
+        folderlist = []
 
-        workdir = os.path.join(os.getcwd(), project)
-        foldername = generate_random_folder()
-        outputdir = os.path.join(workdir, foldername)
-
-        while os.path.exists(outputdir):
+        for file in input:
+            workdir = os.path.join(os.getcwd(), project)
             foldername = generate_random_folder()
             outputdir = os.path.join(workdir, foldername)
 
-        # Ordner anlegen
-        os.makedirs(outputdir)
-        
-        # Festlegen der Parameter für den Start des Dockercontainers
-        licensepath= os.path.join(os.getcwd(), 'gurobi_docker.lic')
-        external_wdir = outputdir
-        docker_wdir = "/app/working"
+            while os.path.exists(outputdir):
+                foldername = generate_random_folder()
+                outputdir = os.path.join(workdir, foldername)
 
-        if ftype == "json":
-            savefile = open(os.path.join(outputdir, "config.json"), 'wb')
-            configfile = os.path.join(docker_wdir, "config.json")
-        else:
-            savefile = open(os.path.join(outputdir, "config.bin"), 'wb')
-            configfile = os.path.join(docker_wdir, "config.bin")
-        savefile.write(input)
-        savefile.close()
+            # Ordner anlegen
+            os.makedirs(outputdir)
+            
+            # Festlegen der Parameter für den Start des Dockercontainers
+            licensepath= os.path.join(os.getcwd(), 'gurobi_docker.lic')
+            external_wdir = outputdir
+            docker_wdir = "/app/working"
 
-        # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
-        dock_client = docker.from_env()
+            if ftype == "json":
+                savefile = open(os.path.join(outputdir, "config.json"), 'wb')
+                configfile = os.path.join(docker_wdir, "config.json")
+            else:
+                savefile = open(os.path.join(outputdir, "config.bin"), 'wb')
+                configfile = os.path.join(docker_wdir, "config.bin")
+            savefile.write(file)
+            savefile.close()
 
-        # Abfragen ob das Image existiert
-        image = dock_client.images.list(IMAGE_TAG)
+            # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
+            dock_client = docker.from_env()
 
-        # Wenn lokal kein Image existiert, wird dieses erstellt.
-        if image == []:
-            raise HTTPException(status_code=404, detail="Docker image not found")
+            # Abfragen ob das Image existiert
+            image = dock_client.images.list(IMAGE_TAG)
 
-        print("License: " + licensepath)
-        print("Working: " + external_wdir)
-        print("File: " + configfile)
+            # Wenn lokal kein Image existiert, wird dieses erstellt.
+            if image == []:
+                raise HTTPException(status_code=404, detail="Docker image not found")
 
-        volumes_dict = {
-            licensepath: {'bind': '/opt/gurobi/gurobi.lic', 'mode': 'ro'},
-            external_wdir: {'bind': '/app/working', 'mode': 'rw'}
-        }
+            print("License: " + licensepath)
+            print("Working: " + external_wdir)
+            print("File: " + configfile)
 
-        environmental_dict = {
-            'FILE': configfile,
-            'WDIR': docker_wdir
-        }
-        
-        # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
-        container = dock_client.containers.run(
-            IMAGE_TAG, 
-            detach=True,
-            volumes=volumes_dict,
-            environment=environmental_dict,
-            name=foldername
-        )
+            volumes_dict = {
+                licensepath: {'bind': '/opt/gurobi/gurobi.lic', 'mode': 'ro'},
+                external_wdir: {'bind': '/app/working', 'mode': 'rw'}
+            }
 
-        return templates.TemplateResponse("submitted.html", {"request": request, "container_name": foldername})
+            environmental_dict = {
+                'FILE': configfile,
+                'WDIR': docker_wdir
+            }
+            
+            # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
+            container = dock_client.containers.run(
+                IMAGE_TAG, 
+                detach=True,
+                volumes=volumes_dict,
+                environment=environmental_dict,
+                name=foldername
+            )
+
+            folderlist.append(foldername)
+
+        return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})
     else:
         raise HTTPException(status_code=404, detail="Input not given!")
