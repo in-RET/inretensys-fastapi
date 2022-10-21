@@ -2,7 +2,9 @@
 
 {% block content %}
 <h3>Task-Infos</h3>
-{% for container in container_list %}
-    <p>Container: {{ container }}</p>
-{% endfor %}
+<p>
+    {% for container in container_list %}
+        Container: {{ container }}<br>
+    {% endfor %}
+</p>
 {% endblock content %}

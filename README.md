@@ -1,13 +1,46 @@
-# API for InRetEnsys
+# API for inretensys-backend
 
-## Start with Uvicorn
-uvicorn api.api:app --reload --bind 0.0.0.0:80
+## Vorraussetzungen
+- Python
+- Docker
+---
+## Installation
+Nach der Installation von Python (Version >3.6) und Docker sollte eine virtuelle Umgebung angelegt werden. Hierzu öffnen Sie bitte die Konsole/Terminal und navigieren in den Projektordner.
+
+Eine virtuelle Pythonumgebung kann nun mit dem folgenden Befehl angelegt werden.
+
+```
+$ python -m venv .venv
+```
+
+Es wird ein weiterer Ordner erstellt mit dem namen ".venv". Unter Umständen kann dieser nicht sichtbar sein.
+
+Aktivieren sie nun diese Umgebung mit
+```
+$ source venv/bin/activate
+```
+
+Nachfolgenden müssen alle benötigten Python-Packages installiert werden.
+
+```
+$ pip install -r api/requirements.txt
+```
+
+Nach Abschluss der installation kann das Projekt gestartet werden.
 
 ---
+## Start der Software
 
-## Start with Gunicorn
-gunicorn api.api:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
+### Uvicorn
+````
+$ uvicorn api.api:app --reload
+````
 
----
+Erreichbar ist die API + Dokumentation unter http://localhost:8000
 
-Erreichbar ist die Website folglich unter http://localhost
+### Gunicorn
+````
+$ gunicorn api.api:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
+````
+
+Erreichbar ist die API + Dokumentation unter http://localhost
