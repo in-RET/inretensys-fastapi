@@ -37,12 +37,12 @@ async def root(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
 
 
-@app.get("/getComponentsList")
+@app.get("/components/")
 async def get_components_list():
     return JSONResponse(content={"components" : CreateComponentsList()})
 
 
-@app.get("/getComponentSchema/{selectedType}")
+@app.get("/components/{selectedType}")
 async def get_component_schema(selectedType):
     if selectedType == "InRetEnsysModel":
         schemaData = InRetEnsysModel.schema_json()
