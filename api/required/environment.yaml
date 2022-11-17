@@ -1,0 +1,10 @@
+name: simulation_environment
+dependencies:
+  - python>=3.7
+  - pip
+  - pip:
+    - pydantic
+    - oemof.solph
+    - gurobipy
+    - pyrsistent
+    - InRetEnsys-0.2a2-py3-none-any.whl

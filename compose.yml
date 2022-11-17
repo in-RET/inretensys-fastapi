@@ -4,7 +4,7 @@ services:
     build: api/.
     image: inretensys-fastapi-backend
     ports:
-      - "8000:8000"
+      - "8000:8001"
     volumes:
       - ./api:/api
       - ./dockerfiles:/dockerfiles
