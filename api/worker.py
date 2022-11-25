@@ -1,1 +1,0 @@
-# build a docker worker for this application

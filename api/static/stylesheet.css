@@ -9,6 +9,7 @@
     grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     min-width: 1280px;
+    background-color: #FFEFDF;
 }
 
 .header {
@@ -18,13 +19,13 @@
     
     height: 100px;
     padding-top: 20px;
-    background-color: #616263;
+    background-color: #F0EFDF;
 }
 
 .footer {
     height: 25px;
     text-align: center;
-    background-color: #616263;
+    background-color: #F0EFDF;
 }
 
 .hs-blue {
