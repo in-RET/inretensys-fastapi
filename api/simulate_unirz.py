@@ -44,10 +44,7 @@ setenv GUROBI_HOME /usr/app-soft/gurobi/gurobi911/linux64/
 setenv PATH ${{PATH}}:${{GUROBI_HOME}}/bin 
 setenv LD_LIBRARY_PATH ${{LD_LIBRARY_PATH}}:${{GUROBI_HOME}}/lib
 
-setenv FILE {configuration}
-setenv WDIR ${{PWD}}
-
-python main.py
+python main.py -wdir ${{PWD}} {configuration}
 """.format(**csh_value)
 
     client = paramiko.SSHClient()

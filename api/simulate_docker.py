@@ -12,7 +12,6 @@ def simulate_docker(parentfolder, configfile, foldername, ftype, file):
 
     # Festlegen der Parameter für den Start des Dockercontainers
     licensepath = os.path.join(os.getcwd(), 'gurobi_docker.lic')
-    external_wdir = outputdir
     docker_wdir = "/app/working"
 
     if ftype == "fileJson":
@@ -39,19 +38,17 @@ def simulate_docker(parentfolder, configfile, foldername, ftype, file):
 
     volumes_dict = {
         licensepath: {'bind': '/opt/gurobi/gurobi.lic', 'mode': 'ro'},
-        external_wdir: {'bind': '/app/working', 'mode': 'rw'}
-    }
-
-    environmental_dict = {
-        'FILE': configfile,
-        'WDIR': docker_wdir
+        outputdir: {'bind': docker_wdir, 'mode': 'rw'}
     }
 
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = dock_client.containers.run(
         IMAGE_TAG,
+        #entrypoint=["/bin/bash" , "-c", "-it"],
+        #command=["ls /app -axl"],
+        entrypoint=["python", "main.py"],
+        command="-wdir /app/working " + configfile,
         detach=True,
         volumes=volumes_dict,
-        environment=environmental_dict,
-        name=foldername
+        name=foldername,
     )
