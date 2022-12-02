@@ -13,7 +13,6 @@ from InRetEnsys import *
 from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
 
-
 origins = [
     "http://localhost",
     "http://localhost:8000"
@@ -98,9 +97,11 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
 
 
 @app.post("/uploadJson")
-async def upload_file(request: Request):
-    # Only supports SSH actually
-    return run_simulation(request, input=[await request.json()], ftype="Json", external=True)
+async def upload_file(request: Request, username: str, password: str, docker: bool):
+    FTP_LOGIN = username
+    FTP_PWD = password
+    
+    return run_simulation(request, input=[await request.json()], ftype="Json", external=True, container=docker)
 
 
 def generate_random_folder():
