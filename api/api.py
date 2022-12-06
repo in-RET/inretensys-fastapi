@@ -31,44 +31,6 @@ async def root(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
 
 
-@app.get("/components/")
-async def get_components_list():
-    return JSONResponse(content={"components": CreateComponentsList()})
-
-
-@app.get("/components/{selectedType}")
-async def get_component_schema(selectedType):
-    if selectedType == "InRetEnsysModel":
-        schemaData = InRetEnsysModel.schema_json()
-    elif selectedType == "InRetEnsysBus":
-        schemaData = InRetEnsysBus.schema_json()
-    elif selectedType == "InRetEnsysFlow":
-        schemaData = InRetEnsysFlow.schema_json()
-    elif selectedType == "InRetEnsysSink":
-        schemaData = InRetEnsysSink.schema_json()
-    elif selectedType == "InRetEnsysSource":
-        schemaData = InRetEnsysSource.schema_json()
-    elif selectedType == "InRetEnsysNonConvex":
-        schemaData = InRetEnsysNonConvex.schema_json()
-    elif selectedType == "InRetEnsysInvestment":
-        schemaData = InRetEnsysInvestment.schema_json()
-    elif selectedType == "InRetEnsysTransformer":
-        schemaData = InRetEnsysTransformer.schema_json()
-    elif selectedType == "InRetEnsysEnergysystem":
-        schemaData = InRetEnsysEnergysystem.schema_json()
-    elif selectedType == "InRetEnsysStorage":
-        schemaData = InRetEnsysStorage.schema_json()
-    elif selectedType == "InRetEnsysConstraints":
-        schemaData = InRetEnsysConstraints.schema_json()
-    else:
-        schemaData = None
-
-    if schemaData is not None:
-        return JSONResponse(content=schemaData)
-    else:
-        raise HTTPException(status_code=404, detail="Item not found")
-
-
 @app.post("/uploadFileBinary")
 async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(...), password: str = Form(...)):
     filelist = []
@@ -92,8 +54,6 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
     if docker == "docker":
         return run_simulation(request, input=filelist, ftype="fileJson", container=True)
     else:
-        print("Username:", username)
-        print("Password:", password)
         return run_simulation(request, input=filelist, ftype="fileJson", username=username, passwd=password)
         
 
@@ -129,9 +89,9 @@ def run_simulation(request: Request, input=None, ftype=None, parentfolder="work"
                 simulate_docker(parentfolder, name_configfile, name_job, ftype, datafile)
             else:
                 if username is None or passwd is None:
-                    raise HTTPException(status_code=404, detail="Authentification failed!")
+                    raise HTTPException(status_code=401, detail="Authentification Error!")
                 else:   
-                    simulate_unirz(name_configfile, name_job, ftype, datafile, username, passwd)
+                    simulate_unirz(name_configfile, name_job, ftype, datafile, str(username), str(passwd))
 
             folderlist.append(name_job)
 
