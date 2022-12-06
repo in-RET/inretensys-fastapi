@@ -4,7 +4,7 @@ import stat
 
 from .constants import *
 
-def simulate_unirz(configfile, foldername, ftype, file):
+def simulate_unirz(configfile, foldername, ftype, file, username, passwd):
 
     csh_value = {
         'jobname': foldername,
@@ -49,7 +49,7 @@ python main.py -wdir ${{PWD}} {configuration}
 
     client = paramiko.SSHClient()
     client.load_system_host_keys()
-    client.connect(FTP_SERVER, 22, FTP_LOGIN, FTP_PWD)
+    client.connect(FTP_SERVER, 22, "alubojanski", "%.30fpgM") #username, passwd)
 
     with client.open_sftp() as sftp:
         sftp.chdir("work")
@@ -72,7 +72,7 @@ python main.py -wdir ${{PWD}} {configuration}
 
         print(os.getcwd())
         sftp.put(os.path.join(os.getcwd(), "api", "required", "environment.yaml"), "environment.yaml") 
-        sftp.put(os.path.join(os.getcwd(), "api", "required", "InRetEnsys-0.2a2-py3-none-any.whl"), "InRetEnsys-0.2a2-py3-none-any.whl")
+        sftp.put(os.path.join(os.getcwd(), "api", "required", "InRetEnsys-0.2a3-py3-none-any.whl"), "InRetEnsys-0.2a2-py3-none-any.whl")
         sftp.put(os.path.join(os.getcwd(), "api", "required", "main.py"), "main.py")
 
         sftp.close()

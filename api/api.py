@@ -26,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
@@ -71,7 +70,7 @@ async def get_component_schema(selectedType):
 
 
 @app.post("/uploadFileBinary")
-async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...)):
+async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(...), password: str = Form(...)):
     filelist = []
 
     for datafile in datafiles:
@@ -80,11 +79,11 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
     if docker == "docker":
         return run_simulation(request, input=filelist, ftype="fileBin", container=True)
     else:
-        return run_simulation(request, input=filelist, ftype="fileBin")
+        return run_simulation(request, input=filelist, ftype="fileBin", username=username, passwd=password)
 
 
 @app.post("/uploadFileJson")
-async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...)):
+async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(...), password: str = Form(...)):
     filelist = []
 
     for datafile in datafiles:
@@ -93,15 +92,14 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
     if docker == "docker":
         return run_simulation(request, input=filelist, ftype="fileJson", container=True)
     else:
-        return run_simulation(request, input=filelist, ftype="fileJson")
-
+        print("Username:", username)
+        print("Password:", password)
+        return run_simulation(request, input=filelist, ftype="fileJson", username=username, passwd=password)
+        
 
 @app.post("/uploadJson")
 async def upload_file(request: Request, username: str, password: str, docker: bool):
-    FTP_LOGIN = username
-    FTP_PWD = password
-    
-    return run_simulation(request, input=[await request.json()], ftype="Json", external=True, container=docker)
+    return run_simulation(request, input=[await request.json()], ftype="Json", external=True, container=docker, username=username, passwd=password)
 
 
 def generate_random_folder():
@@ -109,7 +107,7 @@ def generate_random_folder():
 
 
 @app.post("/runSimulation")
-def run_simulation(request: Request, input=None, ftype=None, parentfolder="work", external=False, container=False) -> Response:
+def run_simulation(request: Request, input=None, ftype=None, parentfolder="work", external=False, container=False, username=None, passwd=None) -> Response:
     if input is not None:
         folderlist = []
 
@@ -130,7 +128,10 @@ def run_simulation(request: Request, input=None, ftype=None, parentfolder="work"
             if container:
                 simulate_docker(parentfolder, name_configfile, name_job, ftype, datafile)
             else:
-                simulate_unirz(name_configfile, name_job, ftype, datafile)
+                if username is None or passwd is None:
+                    raise HTTPException(status_code=404, detail="Authentification failed!")
+                else:   
+                    simulate_unirz(name_configfile, name_job, ftype, datafile, username, passwd)
 
             folderlist.append(name_job)
 
