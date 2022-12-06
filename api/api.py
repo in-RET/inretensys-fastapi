@@ -1,15 +1,18 @@
 import os
 import uuid
+import paramiko
+import stat
 from typing import List
 
 from api import app, templates
-from api.helpers import CreateComponentsList
 from fastapi import File, Request, Response, UploadFile, Form
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from InRetEnsys import *
 
+
+from .constants import FTP_SERVER
 from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
 
@@ -70,6 +73,7 @@ def generate_random_folder():
 def run_simulation(request: Request, input=None, ftype=None, parentfolder="work", external=False, container=False, username=None, passwd=None) -> Response:
     if input is not None:
         folderlist = []
+        startscript = "#!/bin/csh\n"
 
         for datafile in input:
             workdir = os.path.join(os.getcwd(), parentfolder)
@@ -92,8 +96,25 @@ def run_simulation(request: Request, input=None, ftype=None, parentfolder="work"
                     raise HTTPException(status_code=401, detail="Authentification Error!")
                 else:   
                     simulate_unirz(name_configfile, name_job, ftype, datafile, str(username), str(passwd))
+                    startscript += "cd " + name_job + "\n" 
+                    startscript += "bsub -q 'BatchXL' -J '" + name_job + "' batchscript.csh\n"
+                    startscript += "cd ..\n"
+
+            client = paramiko.SSHClient()
+            client.load_system_host_keys()
+            client.connect(FTP_SERVER, 22, "alubojanski", "%.30fpgM") #username, passwd)
 
             folderlist.append(name_job)
+
+        if not container:
+            with client.open_sftp() as sftp:
+                sftp.chdir("work")
+
+                with sftp.open("startskript.csh", "at") as sftp_file:
+                    sftp_file.write(startscript)
+                    sftp_file.close()
+                sftp.chmod("startskript.csh", stat.S_IRWXU)                
+                sftp.close()
 
         if not external:
             return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})

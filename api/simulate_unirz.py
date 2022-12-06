@@ -69,8 +69,6 @@ python main.py -wdir ${{PWD}} {configuration}
         sftp_file.write(file)
         sftp_file.close()       
         
-
-        print(os.getcwd())
         sftp.put(os.path.join(os.getcwd(), "api", "required", "environment.yaml"), "environment.yaml") 
         sftp.put(os.path.join(os.getcwd(), "api", "required", "InRetEnsys-0.2a3-py3-none-any.whl"), "InRetEnsys-0.2a3-py3-none-any.whl")
         sftp.put(os.path.join(os.getcwd(), "api", "required", "main.py"), "main.py")
