@@ -29,13 +29,17 @@ source /usr/app-soft/anaconda3/etc/profile.d/conda.csh
 
 module load python/anaconda3
 
-conda env list
-conda env create --file environment.yaml
-conda activate simulation_environment
+if [[ $(conda env list) = *"simulation_environment"* ]]; then
+   echo "Python environment found... activating..."
+   conda activate simulation_environment
+else
+   echo "Python environment not found... creating..."
+   conda env create --file environment.yaml
+   conda activate simulation_environment
+   exit
+fi;
 
-which python
-
-pip install InRetEnsys-0.2a3-py3-none-any.whl
+pip install --upgrade InRetEnsys-0.2a3-py3-none-any.whl
 
 module load gurobi/v911
 echo $GRB_LICENSE_FILE
