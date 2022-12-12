@@ -48,7 +48,7 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
 
 
 @app.post("/uploadFileJson")
-async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(...), password: str = Form(...)):
+async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(default=None), password: str = Form(default=None)):
     filelist = []
 
     for datafile in datafiles:
@@ -82,13 +82,11 @@ def run_simulation(request: Request, input=None, ftype=None, parentfolder="work"
             while os.path.exists(os.path.join(workdir, name_job)):
                 name_job = generate_random_folder()
                 
-            if ftype == "fileJson":
+            if ftype == "fileJson" or ftype == "Json":
                 name_configfile = "config.json"
             elif ftype == "fileBin":
                 name_configfile = "config.bin"
-            elif ftype == "Json":
-                name_configfile = "config.json"
-
+            
             if container:
                 simulate_docker(parentfolder, name_configfile, name_job, ftype, datafile)
             else:
@@ -100,21 +98,20 @@ def run_simulation(request: Request, input=None, ftype=None, parentfolder="work"
                     startscript += "bsub -q 'BatchXL' -J '" + name_job + "' batchscript.csh\n"
                     startscript += "cd ..\n"
 
-            client = paramiko.SSHClient()
-            client.load_system_host_keys()
-            client.connect(FTP_SERVER, 22, "alubojanski", "%.30fpgM") #username, passwd)
+                client = paramiko.SSHClient()
+                client.load_system_host_keys()
+                client.connect(FTP_SERVER, 22, username, passwd)
+
+                with client.open_sftp() as sftp:
+                    sftp.chdir("work")
+
+                    with sftp.open("startskript.csh", "at") as sftp_file:
+                        sftp_file.write(startscript)
+                        sftp_file.close()
+                    sftp.chmod("startskript.csh", stat.S_IRWXU)                
+                    sftp.close()
 
             folderlist.append(name_job)
-
-        if not container:
-            with client.open_sftp() as sftp:
-                sftp.chdir("work")
-
-                with sftp.open("startskript.csh", "at") as sftp_file:
-                    sftp_file.write(startscript)
-                    sftp_file.close()
-                sftp.chmod("startskript.csh", stat.S_IRWXU)                
-                sftp.close()
 
         if not external:
             return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})

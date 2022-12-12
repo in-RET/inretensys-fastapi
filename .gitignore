@@ -35,5 +35,3 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-
-api/constants.py
