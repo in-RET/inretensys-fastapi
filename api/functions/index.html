@@ -535,11 +535,18 @@
 <h1 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h1>
 <h2 id="public-functions">Public Functions<a class="headerlink" href="#public-functions" title="Permanent link">&para;</a></h2>
 <h3 id="url">URL: "/"<a class="headerlink" href="#url" title="Permanent link">&para;</a></h3>
-<p>Generic root-path to render the mainpage.</p>
+<p>Generic root-path to render the mainpage.
+To get an overview of the rendered page see the picture below.</p>
+<figure>
+<p><img alt="Image title" src="../../media/base-gui.PNG" />
+  </p>
+<figcaption>Example-GUI for the given API</figcaption>
+</figure>
 <h3 id="url-uploadfile">URL: "/uploadFile"<a class="headerlink" href="#url-uploadfile" title="Permanent link">&para;</a></h3>
-<p>To be done.</p>
+<p>This path is used by websites which provide a graphical user interface, like the root path of these API.</p>
+<p>The python function reads all provided datafiles in and runs the simulations depending on the flag 'docker' which is a radio box on the given gui. (See the picture above.)</p>
 <h3 id="url-uploadjson">URL: "/uploadJson"<a class="headerlink" href="#url-uploadjson" title="Permanent link">&para;</a></h3>
-<p>These path is used the send post-requests where the energysystem is an json-formatted string as data of the request.</p>
+<p>This path is used the send post-requests where the energysystem is an json-formatted string as data of the request.</p>
 <p>The python function wraps all given data to the private function 'run_simulation(..)' and returns the given website or HTTPException.
 All created folders and their names are returned as a Jinja2-Template which is based on the template from the generic path.</p>
 <p>Every request create one workingdirectory for an energysystem. 
