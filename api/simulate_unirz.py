@@ -1,8 +1,10 @@
 import os
-import paramiko
 import stat
 
+import paramiko
+
 from .constants import *
+
 
 def simulate_unirz(configfile, foldername, ftype, file, username, passwd):
 
@@ -53,7 +55,7 @@ python main.py -wdir ${{PWD}} {configuration}
 
     client = paramiko.SSHClient()
     client.load_system_host_keys()
-    client.connect(FTP_SERVER, 22, "alubojanski", "%.30fpgM") #username, passwd)
+    client.connect(FTP_SERVER, 22, username, passwd)
 
     with client.open_sftp() as sftp:
         sftp.chdir("work")
@@ -64,12 +66,10 @@ python main.py -wdir ${{PWD}} {configuration}
             sftp_file.close()
         sftp.chmod("batchscript.csh", stat.S_IRWXU)
 
-        if ftype == "fileJson":
-            sftp_file = sftp.open("config.json", 'wb')
-        elif ftype == "fileBin":
-            sftp_file = sftp.open("config.bin", 'wb')
-        elif ftype == "Json":
+        if ftype == FTYPE_JSON:
             sftp_file = sftp.open("config.json", 'wt')
+        elif ftype == FTYPE_BINARY:
+            sftp_file = sftp.open("config.bin", 'wb')
         sftp_file.write(file)
         sftp_file.close()       
         

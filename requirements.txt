@@ -12,7 +12,6 @@ fastapi==0.88.0
 gurobipy==10.0.0
 h11==0.14.0
 idna==3.4
-InRetEnsys==0.2a2
 Jinja2==3.1.2
 MarkupSafe==2.1.1
 networkx==2.8.8

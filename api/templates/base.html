@@ -15,9 +15,15 @@
 <body>
   <script type="text/javascript">
     function toggle_login_form() {
-      let item = document.getElementById("loginform");
+      let loginform = document.getElementById("loginform");
+      let dockercheck = document.getElementById("docker");
+      let sshcheck = document.getElementById("ssh");
 
-      item.hidden = !item.hidden;
+      if (sshcheck.checked) {
+        loginform.hidden = false;
+      } else {
+        loginform.hidden = true;
+      }
     }
   </script>
 
@@ -32,63 +38,25 @@
       </div>
 
       <!-- content -->
-      <div class="accordion" id="accordionExample">
-        <br />
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-              aria-expanded="false" aria-controls="collapseOne">
-              JSON-Dateien
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <form action="/uploadFileJson" enctype="multipart/form-data" method="post">
-                <h5>Daten des Energiesystems</h5>
-                <div class="mb-3">
-                  <label for="datafile" class="form-label">Konfigurationsdatei</label>
-                  <input class="form-control" name="datafiles" type="file" id="datafile" multiple="multiple"><br />
-                  <div onchange=toggle_login_form()>
-                    <h5>Ausführungsmethode</h5>
-                    <div class="form-check">
-                      <label class="form-check-label" for="docker">Run with Docker</label>
-                      <input class="form-check-input" type="radio" name="docker" id="docker" value="docker" checked>
-                    </div>
-                    <div class="form-check">
-                      <label class="form-check-label" for="ssh">Run with SSH</label>
-                      <input class="form-check-input" type="radio" name="docker" id="ssh" value="ssh">
-                    </div><br />
-                    <div class="mb-3 row" id="loginform" hidden>
-                      <h5>Logindaten Universitätsrechenzentrum</h5>
-                      <div class="col">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="username" class="form-control" name="username" id="username" placeholder="Nutzername">
-                      </div>
-                      <div class="col">
-                        <label for="password" class="form-label">Email address</label>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
-                      </div>
-                    </div>
-                  </div><br />
-                  <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
+      <div class="row">
+        <div>
+          <h1>Upload verschiedener Dateiformate</h1>
+          <form action="/uploadFile" enctype="multipart/form-data" method="post">
+            <h5>Daten des Energiesystems</h5>
+            <div class="mb-3">
+              <label for="datafile" class="form-label">Konfigurationsdatei</label>
+              <input class="form-control" name="datafiles" type="file" id="datafile" multiple="multiple"><br />
+              <div onchange=toggle_login_form()>
+                <h5>Ausführungsmethode</h5>
+                <div class="form-check">
+                  <label class="form-check-label" for="docker">Run with Docker</label>
+                  <input class="form-check-input" type="radio" name="docker" id="docker" value="docker" checked>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="accordion-item" hidden>
-          <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-              Binärdateien
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <form action="/uploadFileBinary" enctype="multipart/form-data" method="post">
-                <div class="mb-3 row">
+                <div class="form-check">
+                  <label class="form-check-label" for="ssh">Run with SSH</label>
+                  <input class="form-check-input" type="radio" name="docker" id="ssh" value="ssh">
+                </div><br />
+                <div class="mb-3 row" id="loginform" hidden>
                   <h5>Logindaten Universitätsrechenzentrum</h5>
                   <div class="col">
                     <label for="username" class="form-label">Username</label>
@@ -99,27 +67,12 @@
                     <input type="password" class="form-control" name="password" id="password" placeholder="Password">
                   </div>
                 </div>
-                <h5>Daten des Energiesystems</h5>
-                <div class="mb-3">
-                  <label for="datafile" class="form-label">Konfigurationsdatei</label>
-                  <input class="form-control" name="datafiles" type="file" id="datafile" multiple="multiple"><br />
-                  <h5>Ausführungsmethode</h5>
-                  <div class="form-check">
-                    <label class="form-check-label" for="docker">Run with Docker</label>
-                    <input class="form-check-input" type="radio" name="docker" id="docker" value="docker" checked>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label" for="ssh">Run with SSH</label>
-                    <input class="form-check-input" type="radio" name="docker" id="ssh" value="ssh">
-                  </div><br />
-                  <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
-                </div>
-              </form>
+              </div><br />
+              <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
-
       <div class="row">
         {% block content %}
 

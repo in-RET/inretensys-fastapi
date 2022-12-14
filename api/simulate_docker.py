@@ -1,9 +1,10 @@
 import os
-import docker
 
+import docker
 from fastapi.exceptions import HTTPException
 
 from .constants import *
+
 
 def simulate_docker(parentfolder, configfile, foldername, ftype, file):
     # Lokalen Ordner anlegen
@@ -14,12 +15,10 @@ def simulate_docker(parentfolder, configfile, foldername, ftype, file):
     licensepath = os.path.join(os.getcwd(), 'gurobi_docker.lic')
     docker_wdir = "/app/working"
 
-    if ftype == "fileJson":
-        savefile = open(os.path.join(outputdir, configfile), 'wb')
-    elif ftype == "fileBin":
-        savefile = open(os.path.join(outputdir, configfile), 'wb')
-    elif ftype == "Json":
+    if ftype == FTYPE_JSON:
         savefile = open(os.path.join(outputdir, configfile), 'wt')
+    elif ftype == FTYPE_BINARY:
+        savefile = open(os.path.join(outputdir, configfile), 'wb')
     savefile.write(file)
     savefile.close()
 
