@@ -1,14 +1,16 @@
 site_name: inretensys-fastapi
-site_url: https://github.com/pyrokar1993/inretensys-fastapi/
+site_url: https://github.com/in-RET/inretensys-fastapi/
 site_author: Andreas Lubojanski
 
 # Repository
-repo_name: pyrokar1993/inretensys-fastapi
-repo_url: https://github.com/pyrokar1993/inretensys-fastapi
+repo_name: in-RET/inretensys-fastapi
+repo_url: https://github.com/in-RET/inretensys-fastapi
 
 markdown_extensions:
     - toc:
         permalink: true
+    - attr_list
+    - md_in_html
     - pymdownx.highlight:
           anchor_linenums: true
           use_pygments: true
@@ -21,7 +23,10 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
     - 'Home': index.md
-    - 'API': api.md
+    - 'API': 
+        - 'Overview': api/api.md
+        - 'Usage with Python': api/python.md
+        - 'Functions': api/functions.md
     - 'About': about.md
     - 'Release Notes': release-notes.md
 theme:
@@ -40,5 +45,5 @@ extra:
         - icon: fontawesome/solid/envelope
           link: mailto:andreas.lubojanski@hs-nordhausen.de
     generator: true
-copyright: Copyright &copy; 2022 Andreas Lubojanski
+copyright: Copyright &copy; 2022 Institut für regnenrative Energietechnik
     

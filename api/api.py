@@ -1,6 +1,5 @@
 import os
 import stat
-import uuid
 from typing import List
 
 import paramiko
@@ -12,6 +11,7 @@ from fastapi.responses import HTMLResponse
 from InRetEnsys import *
 
 from .constants import FTP_SERVER, FTYPE_BINARY, FTYPE_JSON
+from .helpers import generate_random_folder
 from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
 
@@ -34,19 +34,6 @@ async def root(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
 
 
-@app.post("/uploadFileBinary")
-async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(default=None), password: str = Form(default=None)):
-    filelist = []
-
-    for datafile in datafiles:
-        filelist.append(await datafile.read())
-
-    if docker == "docker":
-        return run_simulation(request, input=filelist, ftype="fileBin", container=True)
-    else:
-        return run_simulation(request, input=filelist, ftype="fileBin", username=username, passwd=password)
-
-
 @app.post("/uploadFile")
 async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(default=None), password: str = Form(default=None)):
     filelist = []
@@ -65,11 +52,6 @@ async def upload_file(request: Request, username: str, password: str, docker: bo
     return run_simulation(request, input=[(await request.json(), FTYPE_JSON)], external=True, container=docker, username=username, passwd=password)
 
 
-def generate_random_folder():
-    return str(uuid.uuid4().hex)
-
-
-@app.post("/runSimulation")
 def run_simulation(request: Request, input: list = None, parentfolder="work", external=False, container=False, username=None, passwd=None) -> Response:
     if input is not None:
         folderlist = []

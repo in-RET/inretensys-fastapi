@@ -1,15 +1,5 @@
-import InRetEnsys
+import uuid
 
-def CreateComponentsList():
-    allElements = InRetEnsys.__all__
 
-    # Fancy workaround für meine Dummheit
-    if "InRetEnsysConfigContainer" in allElements:
-        allElements.remove("InRetEnsysConfigContainer")
-
-    componentslist = []
-
-    for element in allElements:
-        componentslist.append(element)
-
-    return componentslist
+def generate_random_folder():
+    return str(uuid.uuid4().hex)
