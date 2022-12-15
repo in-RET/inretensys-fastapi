@@ -11,6 +11,8 @@ markdown_extensions:
         permalink: true
     - attr_list
     - md_in_html
+    - admonition
+    - pymdownx.details
     - pymdownx.highlight:
           anchor_linenums: true
           use_pygments: true
@@ -33,6 +35,8 @@ theme:
     name: material
     icon:
         repo: fontawesome/brands/github
+        admonition:
+            <type>: material/alert-outline
     palette:
         scheme: slate
         primary: teal

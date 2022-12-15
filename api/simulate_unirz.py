@@ -41,7 +41,7 @@ else
    exit
 fi;
 
-pip install --upgrade InRetEnsys-0.2a3-py3-none-any.whl
+pip install --upgrade InRetEnsys-0.2a4-py3-none-any.whl
 
 module load gurobi/v911
 echo $GRB_LICENSE_FILE
@@ -74,7 +74,7 @@ python main.py -wdir ${{PWD}} {configuration}
         sftp_file.close()       
         
         sftp.put(os.path.join(os.getcwd(), "api", "required", "environment.yaml"), "environment.yaml") 
-        sftp.put(os.path.join(os.getcwd(), "api", "required", "InRetEnsys-0.2a3-py3-none-any.whl"), "InRetEnsys-0.2a3-py3-none-any.whl")
+        sftp.put(os.path.join(os.getcwd(), "api", "required", "InRetEnsys-0.2a4-py3-none-any.whl"), "InRetEnsys-0.2a4-py3-none-any.whl")
         sftp.put(os.path.join(os.getcwd(), "api", "required", "main.py"), "main.py")
 
         sftp.close()
