@@ -48,7 +48,7 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
 
 
 @app.post("/uploadJson")
-async def upload_file(request: Request, username: str, password: str, docker: bool):
+async def upload_file(request: Request, docker: bool, username: str="", password: str=""):
     return run_simulation(request, input=[(await request.json(), FTYPE_JSON)], external=True, container=docker, username=username, passwd=password)
 
 
