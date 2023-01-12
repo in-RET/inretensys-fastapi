@@ -101,6 +101,6 @@ def run_simulation(request: Request, input: list = None, parentfolder="work", ex
         if not external:
             return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})
         else:
-            return JSONResponse({"folder": folderlist}, status=200)
+            return JSONResponse(content={"folder": folderlist}, status_code=200, media_type="application/json")
     else:
         raise HTTPException(status_code=404, detail="Input not given!")
