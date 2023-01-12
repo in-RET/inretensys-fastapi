@@ -17,9 +17,7 @@ def simulate_docker(parentfolder, configfile, foldername, ftype, file):
     docker_wdir = "/app/working"
 
     if ftype == FTYPE_JSON:
-        print(configfile)
-        jsonfile = configfile.decode('utf-8')
-
+        # Decoding for Website?!
         savefile = open(os.path.join(outputdir, configfile), 'wt')
     elif ftype == FTYPE_BINARY:
         savefile = open(os.path.join(outputdir, configfile), 'wb')

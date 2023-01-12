@@ -7,7 +7,7 @@ from api import app, templates
 from fastapi import File, Form, Request, Response, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from InRetEnsys import *
 
 from .constants import FTP_SERVER, FTYPE_BINARY, FTYPE_JSON
@@ -100,5 +100,7 @@ def run_simulation(request: Request, input: list = None, parentfolder="work", ex
 
         if not external:
             return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})
+        else:
+            return JSONResponse(folderlist, 200)
     else:
         raise HTTPException(status_code=404, detail="Input not given!")
