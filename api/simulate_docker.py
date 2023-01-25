@@ -1,4 +1,3 @@
-import json
 import os
 
 import docker
@@ -7,24 +6,29 @@ from fastapi.exceptions import HTTPException
 from .constants import *
 
 
-def simulate_docker(parentfolder, configfile, foldername, ftype, file):
+def simulate_docker(configfile, foldername, ftype, file):
     # Lokalen Ordner anlegen
-    outputdir = os.path.join(os.getcwd(), parentfolder, foldername)
-    os.makedirs(outputdir)
+
+    #TODO: Es müssen die Absoluten Pfade noch überarbeitet werden
+
+    root_work_dir = "/app/working"
+    specific_work_dir = os.path.join(root_work_dir, foldername)
+    external_work_dir = os.path.join("/home/pyrokar/scratch4", foldername)
+    os.makedirs(specific_work_dir)
+
 
     # Festlegen der Parameter für den Start des Dockercontainers
-    licensepath = os.path.join(os.getcwd(), 'gurobi_docker.lic')
-    docker_wdir = "/app/working"
+    licensepath = os.path.join("/home/pyrokar/", "gurobi_docker.lic")
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
-        savefile = open(os.path.join(outputdir, configfile), 'wt')
+        savefile = open(os.path.join(specific_work_dir, configfile), 'wt')
     elif ftype == FTYPE_BINARY:
-        savefile = open(os.path.join(outputdir, configfile), 'wb')
+        savefile = open(os.path.join(specific_work_dir, configfile), 'wb')
     savefile.write(file)
     savefile.close()
 
-    configfile = os.path.join(docker_wdir, configfile)
+    configfile = os.path.join(root_work_dir, configfile)
 
     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     dock_client = docker.from_env()
@@ -39,8 +43,10 @@ def simulate_docker(parentfolder, configfile, foldername, ftype, file):
 
     volumes_dict = {
         licensepath: {'bind': '/opt/gurobi/gurobi.lic', 'mode': 'ro'},
-        outputdir: {'bind': docker_wdir, 'mode': 'rw'}
+        external_work_dir: {'bind': root_work_dir, 'mode': 'rw'}
     }
+
+    print(volumes_dict)
 
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = dock_client.containers.run(

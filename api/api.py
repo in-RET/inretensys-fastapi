@@ -52,13 +52,13 @@ async def upload_file(request: Request, docker: bool, username: str="", password
     return run_simulation(request, input=[(await request.json(), FTYPE_JSON)], external=True, container=docker, username=username, passwd=password)
 
 
-def run_simulation(request: Request, input: list = None, parentfolder="work", external=False, container=False, username=None, passwd=None) -> Response:
+def run_simulation(request: Request, input: list = None, external=False, container=False, username=None, passwd=None) -> Response:
     if input is not None:
         folderlist = []
         startscript = "#!/bin/csh\n"
 
         for datafile, ftype in input:
-            workdir = os.path.join(os.getcwd(), parentfolder)
+            workdir = os.path.join(os.getcwd(), "working")
             name_job = generate_random_folder()
 
             while os.path.exists(os.path.join(workdir, name_job)):
@@ -70,8 +70,7 @@ def run_simulation(request: Request, input: list = None, parentfolder="work", ex
                 name_configfile = "config.bin"
 
             if container:
-                simulate_docker(parentfolder, name_configfile,
-                                name_job, ftype, datafile)
+                simulate_docker(name_configfile, name_job, ftype, datafile)
             else:
                 if username is None or passwd is None:
                     raise HTTPException(
