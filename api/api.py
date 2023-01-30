@@ -15,6 +15,8 @@ from .helpers import generate_random_folder
 from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
 
+import docker
+
 origins = [
     "http://localhost",
     "http://localhost:8000"
@@ -103,3 +105,14 @@ def run_simulation(request: Request, input: list = None, external=False, contain
             return JSONResponse(content={"folder": folderlist}, status_code=200, media_type="application/json")
     else:
         raise HTTPException(status_code=404, detail="Input not given!")
+
+
+@app.post("/check/{foldername}")
+async def check_container(foldername: str):
+     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
+    docker_client = docker.from_env()
+    docker_container = docker_client.containers.get(foldername)
+    
+    return {"status": docker_container.status, "path": foldername} 
+
+
