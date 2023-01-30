@@ -13,12 +13,12 @@ def simulate_docker(configfile, foldername, ftype, file):
 
     root_work_dir = "/app/working"
     specific_work_dir = os.path.join(root_work_dir, foldername)
-    external_work_dir = os.path.join("/home/pyrokar/scratch4", foldername)
+    external_work_dir = os.path.join(os.getenv("LOCAL_STORAGE_DIR", "/home/pyrokar/scratch4"), foldername)
     os.makedirs(specific_work_dir)
 
 
     # Festlegen der Parameter für den Start des Dockercontainers
-    licensepath = os.path.join("/home/pyrokar/", "gurobi_docker.lic")
+    licensepath = os.getenv("GUROBI_LICENSE_FILE_PATH", os.path.join("/home/pyrokar/", "gurobi_docker.lic")
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
@@ -51,8 +51,6 @@ def simulate_docker(configfile, foldername, ftype, file):
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = dock_client.containers.run(
         IMAGE_TAG,
-        #entrypoint=["/bin/bash" , "-c", "-it"],
-        #command=["ls /app -axl"],
         entrypoint=["python", "main.py"],
         command="-wdir /app/working " + configfile,
         detach=True,
