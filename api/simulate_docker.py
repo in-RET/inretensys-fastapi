@@ -9,8 +9,6 @@ from .constants import *
 def simulate_docker(configfile, foldername, ftype, file):
     # Lokalen Ordner anlegen
 
-    #TODO: Es müssen die Absoluten Pfade noch überarbeitet werden
-
     root_work_dir = "/app/working"
     specific_work_dir = os.path.join(root_work_dir, foldername)
     external_work_dir = os.path.join(os.getenv("LOCAL_STORAGE_DIR", "/home/pyrokar/scratch4"), foldername)
@@ -18,7 +16,7 @@ def simulate_docker(configfile, foldername, ftype, file):
 
 
     # Festlegen der Parameter für den Start des Dockercontainers
-    licensepath = os.getenv("GUROBI_LICENSE_FILE_PATH", os.path.join("/home/pyrokar/", "gurobi_docker.lic")
+    licensepath = os.getenv("GUROBI_LICENSE_FILE_PATH", os.path.join("/home/pyrokar/", "gurobi_docker.lic"))
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
@@ -45,8 +43,6 @@ def simulate_docker(configfile, foldername, ftype, file):
         licensepath: {'bind': '/opt/gurobi/gurobi.lic', 'mode': 'ro'},
         external_work_dir: {'bind': root_work_dir, 'mode': 'rw'}
     }
-
-    print(volumes_dict)
 
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = dock_client.containers.run(
