@@ -5,6 +5,7 @@ from typing import List
 import paramiko
 from api import app, templates
 from fastapi import File, Form, Request, Response, UploadFile
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
@@ -118,9 +119,5 @@ async def check_container(token: str):
     else:
         return_status = "PENDING"
 
-    return JSONResponse(content={"status": return_status, "token": token}, status_code=200, media_type="applicaiton/json")
-
-@app.get("/getLpFile/{token}", response_class=FileResponse)
-async def get_lp_file(token: str):
-    return os.path.join("app", "working", token, "dumps", "config.lp")
+    return JSONResponse(content={"status": return_status, "token": token}, status_code=200, media_type="application/json")
 
