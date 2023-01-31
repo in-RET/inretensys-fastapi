@@ -7,13 +7,13 @@ from api import app, templates
 from fastapi import File, Form, Request, Response, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from InRetEnsys import *
 
-from .constants import FTP_SERVER, FTYPE_BINARY, FTYPE_JSON
 from .helpers import generate_random_folder
 from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
+from .constants import *
 
 import docker
 
@@ -107,12 +107,20 @@ def run_simulation(request: Request, input: list = None, external=False, contain
         raise HTTPException(status_code=404, detail="Input not given!")
 
 
-@app.post("/check/{foldername}")
-async def check_container(foldername: str):
+@app.post("/check/{token}")
+async def check_container(token: str):
      # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     docker_client = docker.from_env()
-    docker_container = docker_client.containers.get(foldername)
+    docker_container = docker_client.containers.get(token)
     
-    return {"status": docker_container.status, "path": foldername} 
+    if docker_container.status == "exited":
+        return_status = "DONE"
+    else:
+        return_status = "PENDING"
 
+    return JSONResponse(content={"status": return_status, "token": token}, status_code=200, media_type="applicaiton/json")
+
+@app.get("/getLpFile/{token}", response_class=FileResponse)
+async def get_lp_file(token: str):
+    return os.path.join("app", "working", token, "dumps", "config.lp")
 

@@ -11,7 +11,7 @@ def simulate_docker(configfile, foldername, ftype, file):
 
     root_work_dir = "/app/working"
     specific_work_dir = os.path.join(root_work_dir, foldername)
-    external_work_dir = os.path.join(os.getenv("LOCAL_STORAGE_DIR", "/home/pyrokar/scratch4"), foldername)
+    external_work_dir = os.path.join(LOCAL_STORAGE_DIR, foldername)
     os.makedirs(specific_work_dir)
 
 
