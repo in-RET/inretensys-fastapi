@@ -15,16 +15,57 @@ To get an overview of the rendered page see the picture below.
 This path is used by websites which provide a graphical user interface, like the root path of these API.
 
 The python function reads all provided datafiles in and runs the simulations depending on the flag 'docker' which is a radio box on the given gui. (See the picture above.)
+Listed below is the a code example for the graphical user interface above.
 
+```html
+<div class="row">
+  <div>
+    <h1>Upload verschiedener Dateiformate</h1>
+    <form action="/uploadFile" enctype="multipart/form-data" method="post">
+      <h5>Daten des Energiesystems</h5>
+      <div class="mb-3">
+        <label for="datafile" class="form-label">Konfigurationsdatei</label>
+        <input class="form-control" name="datafiles" type="file" id="datafile" multiple="multiple"><br />
+        <div onchange=toggle\_login\_form()>
+          <h5>Ausführungsmethode</h5>
+          <div class="form-check">
+            <label class="form-check-label" for="docker">Run with Docker</label>
+            <input class="form-check-input" type="radio" name="docker" id="docker" value="docker" checked>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label" for="ssh">Run with SSH</label>
+            <input class="form-check-input" type="radio" name="docker" id="ssh" value="ssh"> 
+          </div><br/>
+          <div class="mb-3 row" id="loginform" hidden>
+            <h5>Logindaten Universitätsrechenzentrum</h5>
+            <div   class="col">
+              <label for="username" class="form-label">Username</label>
+              <input type="username" class="form-control" name="username" id="username" placeholder="Nutzername">
+            </div>
+            <div class="col">
+              <label for="password" class="form-label">Email address</label>
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+            </div>
+          </div>
+        </div><br />
+        <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
+      </div>
+    </form>
+  </div>
+</div>
+```
+!!! note
+    The submitted file can be a generated binary or json file. Therefore the binary file must be in binary-encoding and the JSON-file as regular utf-8 encoded file.
 
 ### URL: "/uploadJson"
 This path is used the send post-requests where the energysystem is an json-formatted string as data of the request.
 
-The python function wraps all given data to the private function 'run_simulation(..)' and returns the given website or HTTPException.
+The python function wraps all given data to the private function 'run_simulation(..)' and returns the generated website with a list of foldernames, which are the current working directories or a HTTPException.
 All created folders and their names are returned as a Jinja2-Template which is based on the template from the generic path.
 
-Every request create one workingdirectory for an energysystem. 
-It is not possible to submit more than one energysystem within one request.
+!!! Note
+    Every request create one workingdirectory for an energysystem. 
+    It is not possible to submit more than one energysystem within one request.
 
 ## Private Functions
 
@@ -79,5 +120,5 @@ graph TD
   I --> |No| M[raise HTTPException]
 ```
 
-If the Data is written to the UniRZ the user must start the given script on his own via the interface of the UniRZ.
+If the Data is written to the UniRZ the user must start the given script by his own at the UniRZ. This is possible with the job submissions commands which are documented at this [Website](https://tu-ilmenau.de/hpc).
 
