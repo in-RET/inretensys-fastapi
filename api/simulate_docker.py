@@ -16,20 +16,20 @@ def simulate_docker(configfile, foldername, ftype, file):
     root_work_dir = "/app/working"
     specific_work_dir = os.path.join(root_work_dir, foldername)
     external_work_dir = os.path.join(LOCAL_STORAGE_DIR, foldername)
-    os.makedirs(external_work_dir)
+    os.makedirs(specific_work_dir)
     
     licensepath = LICENSE_PATH
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
-        savefile = open(os.path.join(external_work_dir, configfile), 'wt')
+        savefile = open(os.path.join(specific_work_dir, configfile), 'wt')
     elif ftype == FTYPE_BINARY:
-        savefile = open(os.path.join(external_work_dir, configfile), 'wb')
+        savefile = open(os.path.join(specific_work_dir, configfile), 'wb')
     savefile.write(file)
     savefile.close()
 
     # reload the system to get the solvertype
-    reload_file = os.path.join(external_work_dir, configfile)
+    reload_file = os.path.join(specific_work_dir, configfile)
     if reload_file.find(".json") > 0:
         xf = open(reload_file, 'rt')
         model_dict = json.load(xf)
