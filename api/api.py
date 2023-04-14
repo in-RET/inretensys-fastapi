@@ -18,10 +18,7 @@ from .constants import *
 
 import docker
 
-origins = [
-    "http://localhost",
-    "http://localhost:8000"
-]
+origins = ["http://localhost", "http://localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,7 +35,13 @@ async def root(request: Request):
 
 
 @app.post("/uploadFile")
-async def upload_file(request: Request, datafiles: List[UploadFile] = File(...), docker: str = Form(...), username: str = Form(default=None), password: str = Form(default=None)):
+async def upload_file(
+    request: Request,
+    datafiles: List[UploadFile] = File(...),
+    docker: str = Form(...),
+    username: str = Form(default=None),
+    password: str = Form(default=None),
+):
     filelist = []
 
     for datafile in datafiles:
@@ -47,15 +50,33 @@ async def upload_file(request: Request, datafiles: List[UploadFile] = File(...),
     if docker == "docker":
         return run_simulation(request, input=filelist, container=True)
     else:
-        return run_simulation(request, input=filelist, username=username, passwd=password)
+        return run_simulation(
+            request, input=filelist, username=username, passwd=password
+        )
 
 
 @app.post("/uploadJson")
-async def upload_file(request: Request, docker: bool, username: str="", password: str=""):
-    return run_simulation(request, input=[(await request.json(), FTYPE_JSON)], external=True, container=docker, username=username, passwd=password)
+async def upload_file(
+    request: Request, docker: bool, username: str = "", password: str = ""
+):
+    return run_simulation(
+        request,
+        input=[(await request.json(), FTYPE_JSON)],
+        external=True,
+        container=docker,
+        username=username,
+        passwd=password,
+    )
 
 
-def run_simulation(request: Request, input: list = None, external=False, container=False, username=None, passwd=None) -> Response:
+def run_simulation(
+    request: Request,
+    input: list = None,
+    external=False,
+    container=False,
+    username=None,
+    passwd=None,
+) -> Response:
     if input is not None:
         folderlist = []
         startscript = "#!/bin/csh\n"
@@ -77,12 +98,21 @@ def run_simulation(request: Request, input: list = None, external=False, contain
             else:
                 if username is None or passwd is None:
                     raise HTTPException(
-                        status_code=401, detail="Authentification Error!")
+                        status_code=401, detail="Authentification Error!"
+                    )
                 else:
-                    simulate_unirz(name_configfile, name_job,
-                                   ftype, datafile, str(username), str(passwd))
+                    simulate_unirz(
+                        name_configfile,
+                        name_job,
+                        ftype,
+                        datafile,
+                        str(username),
+                        str(passwd),
+                    )
                     startscript += "cd " + name_job + "\n"
-                    startscript += "bsub -q 'BatchXL' -J '" + name_job + "' batchscript.csh\n"
+                    startscript += (
+                        "bsub -q 'BatchXL' -J '" + name_job + "' batchscript.csh\n"
+                    )
                     startscript += "cd ..\n"
 
                 client = paramiko.SSHClient()
@@ -101,23 +131,32 @@ def run_simulation(request: Request, input: list = None, external=False, contain
             folderlist.append(name_job)
 
         if not external:
-            return templates.TemplateResponse("submitted.html", {"request": request, "container_list": folderlist})
+            return templates.TemplateResponse(
+                "submitted.html", {"request": request, "container_list": folderlist}
+            )
         else:
-            return JSONResponse(content={"folder": folderlist}, status_code=200, media_type="application/json")
+            return JSONResponse(
+                content={"folder": folderlist},
+                status_code=200,
+                media_type="application/json",
+            )
     else:
         raise HTTPException(status_code=404, detail="Input not given!")
 
 
 @app.post("/check/{token}")
 async def check_container(token: str):
-     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
+    # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     docker_client = docker.from_env()
     docker_container = docker_client.containers.get(token)
-    
+
     if docker_container.status == "exited":
         return_status = "DONE"
     else:
         return_status = "PENDING"
 
-    return JSONResponse(content={"status": return_status, "token": token}, status_code=200, media_type="application/json")
-
+    return JSONResponse(
+        content={"status": return_status, "token": token},
+        status_code=200,
+        media_type="application/json",
+    )

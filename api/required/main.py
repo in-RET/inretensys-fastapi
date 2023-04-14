@@ -7,14 +7,26 @@ from InRetEnsys import ModelBuilder
 from InRetEnsys.common.log import InRetEnsysLogger
 
 parser = argparse.ArgumentParser(
-    prog = 'main.py',
-    description='InRetEnsys Backend.',
-    epilog = 'In.RET - Institut für regenerative Energietechnik'
+    prog="main.py",
+    description="InRetEnsys Backend.",
+    epilog="In.RET - Institut für regenerative Energietechnik",
 )
 
-parser.add_argument('file', help="Filepath of the configuration.")
-parser.add_argument('-wdir', '--workingdirectory', help="Path to the workingdirectory to use.", default=None)   
-parser.add_argument('-olp', '--only_lp_file', action='store_true', help="If choosen, only the lp-file is stored.", default=False, required=False)
+parser.add_argument("file", help="Filepath of the configuration.")
+parser.add_argument(
+    "-wdir",
+    "--workingdirectory",
+    help="Path to the workingdirectory to use.",
+    default=None,
+)
+parser.add_argument(
+    "-olp",
+    "--only_lp_file",
+    action="store_true",
+    help="If choosen, only the lp-file is stored.",
+    default=False,
+    required=False,
+)
 
 args = parser.parse_args()
 
@@ -40,7 +52,7 @@ else:
     raise Exception("Fileformat is not valid!")
 
 if not os.path.exists(logfile):
-    os.makedirs(os.path.dirname(logfile))   
+    os.makedirs(os.path.dirname(logfile))
     Path(logfile).touch()
 
 InRetEnsysLogger(name="logger", filename=logfile, level=logging.DEBUG)
@@ -52,8 +64,3 @@ try:
         ModelBuilder(configfile, dumpfile, workdir, logdir, dumpdir)
 except:
     raise Exception("Configuration and/or Workingdirectory incorrect!")
-
-
-
-
-
