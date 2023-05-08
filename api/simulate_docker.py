@@ -44,13 +44,13 @@ def simulate_docker(configfile, foldername, ftype, file):
         raise Exception("Fileformat is not valid!")
 
     if model.solver == Solver.gurobi:
-        IMAGE_TAG = "inretensys:0.2a4-gurobi"
+        IMAGE_TAG = "inretensys:0.2a5-gurobi"
         volumes_dict = {
             licensepath: {"bind": "/opt/gurobi/gurobi.lic", "mode": "ro"},
             external_work_dir: {"bind": root_work_dir, "mode": "rw"},
         }
     elif model.solver == Solver.cbc:
-        IMAGE_TAG = "inretensys:0.2a4-cbc"
+        IMAGE_TAG = "inretensys:0.2a5-cbc"
         volumes_dict = {external_work_dir: {"bind": root_work_dir, "mode": "rw"}}
     else:
         raise Exception("Solver not implemented yet.")
