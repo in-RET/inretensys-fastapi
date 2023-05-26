@@ -9,9 +9,6 @@ from fastapi.exceptions import HTTPException
 
 from .constants import *
 
-# IMAGE_TAG = "inretensys:0.2a4-gurobi"
-CONTAINER_NAME = "inret-ensys-testcontainer"
-
 
 def simulate_docker(configfile, foldername, ftype, file):
     root_work_dir = "/app/working"
@@ -19,6 +16,9 @@ def simulate_docker(configfile, foldername, ftype, file):
     external_work_dir = os.path.join(LOCAL_STORAGE_DIR, foldername)
     os.makedirs(specific_work_dir)
 
+    print("Foldername:", foldername)
+    print("ext. Workdir", external_work_dir)
+    
     licensepath = LICENSE_PATH
 
     if ftype == FTYPE_JSON:
@@ -57,6 +57,9 @@ def simulate_docker(configfile, foldername, ftype, file):
 
     configfile = os.path.join(root_work_dir, configfile)
 
+    print(configfile)
+    print(volumes_dict)
+
     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     docker_client = docker.from_env()
 
@@ -71,7 +74,7 @@ def simulate_docker(configfile, foldername, ftype, file):
     container = docker_client.containers.run(
         IMAGE_TAG,
         entrypoint=["python", "main.py"],
-        command="-wdir /app/working " + configfile,
+        command="-wdir " + root_work_dir + " " + configfile,
         detach=True,
         volumes=volumes_dict,
         name=foldername,

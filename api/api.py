@@ -1,14 +1,16 @@
 import os
 import stat
-from typing import List
-
+import docker
 import paramiko
-from api import app, templates
-from fastapi import File, Form, Request, Response, UploadFile
-from fastapi.encoders import jsonable_encoder
+
+from typing import List
+from fastapi import FastAPI, File, Form, Request, Response, UploadFile
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+
 from InRetEnsys import *
 
 from .helpers import generate_random_folder
@@ -16,7 +18,11 @@ from .simulate_docker import simulate_docker
 from .simulate_unirz import simulate_unirz
 from .constants import *
 
-import docker
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="api/static"), name="static")
+
+templates = Jinja2Templates(directory="api/templates")
 
 origins = ["http://localhost", "http://localhost:8000"]
 

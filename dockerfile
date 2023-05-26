@@ -1,9 +1,18 @@
 FROM python:3.10
 
-WORKDIR /app
+ENV APP_ROOT /app
+ENV INSTALL_ROOT /requirements
 
-COPY InRetEnsys-0.2a5-py3-none-any.whl InRetEnsys-0.2a5-py3-none-any.whl
-COPY requirements.txt requirements.txt
+RUN mkdir ${APP_ROOT}
+RUN mkdir ${INSTALL_ROOT}
 
-RUN pip install InRetEnsys-0.2a5-py3-none-any.whl
-RUN pip install -r requirements.txt
+COPY requirements/InRetEnsys-0.2a5-py3-none-any.whl ${INSTALL_ROOT}/InRetEnsys-0.2a5-py3-none-any.whl
+COPY requirements/requirements.txt ${INSTALL_ROOT}/requirements.txt
+
+RUN pip install --upgrade pip
+RUN pip install ${INSTALL_ROOT}/InRetEnsys-0.2a5-py3-none-any.whl
+RUN pip install -r ${INSTALL_ROOT}/requirements.txt
+
+COPY api ${APP_ROOT}/api/
+
+WORKDIR ${APP_ROOT}/

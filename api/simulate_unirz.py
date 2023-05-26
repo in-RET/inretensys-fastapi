@@ -5,7 +5,6 @@ import paramiko
 
 from .constants import *
 
-
 def simulate_unirz(configfile, foldername, ftype, file, username, passwd):
 
     csh_value = {
