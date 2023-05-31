@@ -19,21 +19,14 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
     pathOfExternalWorkDir = os.path.join(LOCAL_STORAGE_DIR, nameOfFolder)
     os.makedirs(pathOfDockerWorkDir)
 
-    uid = pwd.getpwnam(USER_GROUP).pw_uid
-    gid = grp.getgrnam(USER_GROUP).gr_gid
-
-    os.chown(pathOfDockerWorkDir, uid, gid)
-
-    print("Foldername:", nameOfFolder)
-    print("ext. Workdir", pathOfExternalWorkDir)
-    
     licensepath = LICENSE_PATH
+    pathOfConfigfile = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
-        savefile = open(os.path.join(pathOfDockerWorkDir, nameOfConfigFile), "wt")
+        savefile = open(pathOfConfigfile, "wt")
     elif ftype == FTYPE_BINARY:
-        savefile = open(os.path.join(pathOfDockerWorkDir, nameOfConfigFile), "wb")
+        savefile = open(pathOfConfigfile, "wb")
     savefile.write(file)
     savefile.close()
 
@@ -63,18 +56,23 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
 
     internalConfigFile = os.path.join(pathOfInternalWorkDir, nameOfConfigFile)
 
-    print(internalConfigFile)
-    print(volumes_dict)
-
     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     docker_client = docker.from_env()
 
     # Abfragen ob das Image existiert
     image = docker_client.images.list(IMAGE_TAG)
 
-    # Wenn lokal kein Image existiert, wird dieses erstellt.
+    # Wenn lokal kein Image existiert
     if image == []:
         raise HTTPException(status_code=404, detail="Docker image not found")
+
+    print("Verzeichnisübersicht")
+    print("Ext.:", pathOfExternalWorkDir)
+    print("Int.:", pathOfInternalWorkDir)
+    print("Docker:", pathOfDockerWorkDir)
+    print("Config:", pathOfConfigfile)
+    print("Int.Config:", internalConfigFile)
+    print("Volumes_dict", volumes_dict)
 
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = docker_client.containers.run(
