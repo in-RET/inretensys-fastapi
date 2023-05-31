@@ -17,7 +17,7 @@ demandlib==0.1.9
 dhnx==0.0.2
 dill==0.3.6
 docker==6.0.1
-fastapi==0.93.0
+fastapi
 feedinlib==0.0.12
 folium==0.14.0
 fonttools==4.39.3
