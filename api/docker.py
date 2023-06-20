@@ -1,6 +1,9 @@
 import json
 import os
+import grp
 import pickle
+import pwd
+
 from InRetEnsys import InRetEnsysModel
 from InRetEnsys.types import Solver
 
@@ -10,27 +13,25 @@ from fastapi.exceptions import HTTPException
 from .constants import *
 
 
-def simulate_docker(configfile, foldername, ftype, file):
-    root_work_dir = "/app/working"
-    specific_work_dir = os.path.join(root_work_dir, foldername)
-    external_work_dir = os.path.join(LOCAL_STORAGE_DIR, foldername)
-    os.makedirs(specific_work_dir)
+def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
+    pathOfInternalWorkDir = "/app/working"
+    pathOfDockerWorkDir = os.path.join(pathOfInternalWorkDir, nameOfFolder)
+    pathOfExternalWorkDir = os.path.join(LOCAL_STORAGE_DIR, nameOfFolder)
+    os.makedirs(pathOfDockerWorkDir)
 
-    print("Foldername:", foldername)
-    print("ext. Workdir", external_work_dir)
-    
     licensepath = LICENSE_PATH
+    pathOfConfigfile = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
 
     if ftype == FTYPE_JSON:
         # Decoding for Website?!
-        savefile = open(os.path.join(specific_work_dir, configfile), "wt")
+        savefile = open(pathOfConfigfile, "wt")
     elif ftype == FTYPE_BINARY:
-        savefile = open(os.path.join(specific_work_dir, configfile), "wb")
+        savefile = open(pathOfConfigfile, "wb")
     savefile.write(file)
     savefile.close()
 
     # reload the system to get the solvertype
-    reload_file = os.path.join(specific_work_dir, configfile)
+    reload_file = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
     if reload_file.find(".json") > 0:
         xf = open(reload_file, "rt")
         model_dict = json.load(xf)
@@ -43,22 +44,17 @@ def simulate_docker(configfile, foldername, ftype, file):
     else:
         raise Exception("Fileformat is not valid!")
 
+    volumes_dict = {pathOfExternalWorkDir: {"bind": pathOfInternalWorkDir, "mode": "rw"}}
+
     if model.solver == Solver.gurobi:
         IMAGE_TAG = "inretensys:0.2a5-gurobi"
-        volumes_dict = {
-            licensepath: {"bind": "/opt/gurobi/gurobi.lic", "mode": "ro"},
-            external_work_dir: {"bind": root_work_dir, "mode": "rw"},
-        }
+        volumes_dict[licensepath] = {"bind": "/opt/gurobi/gurobi.lic", "mode": "ro"}
     elif model.solver == Solver.cbc:
         IMAGE_TAG = "inretensys:0.2a5-cbc"
-        volumes_dict = {external_work_dir: {"bind": root_work_dir, "mode": "rw"}}
     else:
         raise Exception("Solver not implemented yet.")
 
-    configfile = os.path.join(root_work_dir, configfile)
-
-    print(configfile)
-    print(volumes_dict)
+    internalConfigFile = os.path.join(pathOfInternalWorkDir, nameOfConfigFile)
 
     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
     docker_client = docker.from_env()
@@ -66,16 +62,24 @@ def simulate_docker(configfile, foldername, ftype, file):
     # Abfragen ob das Image existiert
     image = docker_client.images.list(IMAGE_TAG)
 
-    # Wenn lokal kein Image existiert, wird dieses erstellt.
+    # Wenn lokal kein Image existiert
     if image == []:
         raise HTTPException(status_code=404, detail="Docker image not found")
+
+    print("Verzeichnisübersicht")
+    print("Ext.:", pathOfExternalWorkDir)
+    print("Int.:", pathOfInternalWorkDir)
+    print("Docker:", pathOfDockerWorkDir)
+    print("Config:", pathOfConfigfile)
+    print("Int.Config:", internalConfigFile)
+    print("Volumes_dict", volumes_dict)
 
     # Starten des docker-containers, im detach Mode, damit dieser das Python-Programm nicht blockiert
     container = docker_client.containers.run(
         IMAGE_TAG,
         entrypoint=["python", "main.py"],
-        command="-wdir " + root_work_dir + " " + configfile,
+        command="-wdir " + pathOfInternalWorkDir + " " + internalConfigFile,
         detach=True,
         volumes=volumes_dict,
-        name=foldername,
+        name=nameOfFolder,
     )

@@ -13,20 +13,6 @@
 </head>
 
 <body>
-  <script type="text/javascript">
-    function toggle_login_form() {
-      let loginform = document.getElementById("loginform");
-      let dockercheck = document.getElementById("docker");
-      let sshcheck = document.getElementById("ssh");
-
-      if (sshcheck.checked) {
-        loginform.hidden = false;
-      } else {
-        loginform.hidden = true;
-      }
-    }
-  </script>
-
   <div class="pagewrapper">
     <div class="container">
       <!-- header -->
@@ -46,28 +32,6 @@
             <div class="mb-3">
               <label for="datafile" class="form-label">Konfigurationsdatei</label>
               <input class="form-control" name="datafiles" type="file" id="datafile" multiple="multiple"><br />
-              <div onchange=toggle_login_form()>
-                <h5>Ausführungsmethode</h5>
-                <div class="form-check">
-                  <label class="form-check-label" for="docker">Run with Docker</label>
-                  <input class="form-check-input" type="radio" name="docker" id="docker" value="docker" checked>
-                </div>
-                <div class="form-check">
-                  <label class="form-check-label" for="ssh">Run with SSH</label>
-                  <input class="form-check-input" type="radio" name="docker" id="ssh" value="ssh">
-                </div><br />
-                <div class="mb-3 row" id="loginform" hidden>
-                  <h5>Logindaten Universitätsrechenzentrum</h5>
-                  <div class="col">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="username" class="form-control" name="username" id="username" placeholder="Nutzername">
-                  </div>
-                  <div class="col">
-                    <label for="password" class="form-label">Email address</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Password">
-                  </div>
-                </div>
-              </div><br />
               <button class="btn btn-outline-success form-control" type="submit">Run Simulation</button>
             </div>
           </form>
@@ -80,7 +44,7 @@
       </div>
       <!-- footer -->
       <div class="row footer">
-        <p class="hs-green">Copyright 2022 - Institut für regnerative Energietechnik</p>
+        <p class="hs-green">Copyright 2023 - Institut für regnerative Energietechnik</p>
       </div>
 
     </div>

@@ -14,8 +14,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from InRetEnsys import *
 
 from .helpers import generate_random_folder
-from .simulate_docker import simulate_docker
-from .simulate_unirz import simulate_unirz
+from .docker import simulate_docker
 from .constants import *
 
 
@@ -44,97 +43,47 @@ async def root(request: Request):
 async def upload_file(
     request: Request,
     datafiles: List[UploadFile] = File(...),
-    docker: str = Form(...),
-    username: str = Form(default=None),
-    password: str = Form(default=None),
 ):
     filelist = []
 
     for datafile in datafiles:
         filelist.append((await datafile.read(), datafile.content_type))
 
-    if docker == "docker":
-        return run_simulation(request, input=filelist, container=True)
-    else:
-        return run_simulation(
-            request, input=filelist, username=username, passwd=password
-        )
+    return run_simulation(request, input=filelist)
 
 
 @app.post("/uploadJson")
-async def upload_file(
-    request: Request, docker: bool, username: str = "", password: str = ""
-):
+async def upload_file(request: Request):
+
     return run_simulation(
         request,
         input=[(await request.json(), FTYPE_JSON)],
         external=True,
-        container=docker,
-        username=username,
-        passwd=password,
     )
 
 
-def run_simulation(
-    request: Request,
-    input: list = None,
-    external=False,
-    container=False,
-    username=None,
-    passwd=None,
-) -> Response:
-    if input is not None:
+def run_simulation(request: Request, input: list = None, external=False) -> Response:
+    if input is None:
+        raise HTTPException(
+            status_code=404, detail="No Input given!"
+        )
+    else:
         folderlist = []
-        startscript = "#!/bin/csh\n"
-
+        workdir = os.path.join(os.getcwd(), "working")
+        
         for datafile, ftype in input:
-            workdir = os.path.join(os.getcwd(), "working")
-            name_job = generate_random_folder()
+            nameOfJob = generate_random_folder()
 
-            while os.path.exists(os.path.join(workdir, name_job)):
-                name_job = generate_random_folder()
+            while os.path.exists(os.path.join(workdir, nameOfJob)):
+                nameOfJob = generate_random_folder()
 
             if ftype == FTYPE_JSON:
-                name_configfile = "config.json"
+                nameOfConfigFile = "config.json"
             elif ftype == FTYPE_BINARY:
-                name_configfile = "config.bin"
+                nameOfConfigFile = "config.bin"
 
-            if container:
-                simulate_docker(name_configfile, name_job, ftype, datafile)
-            else:
-                if username is None or passwd is None:
-                    raise HTTPException(
-                        status_code=401, detail="Authentification Error!"
-                    )
-                else:
-                    simulate_unirz(
-                        name_configfile,
-                        name_job,
-                        ftype,
-                        datafile,
-                        str(username),
-                        str(passwd),
-                    )
-                    startscript += "cd " + name_job + "\n"
-                    startscript += (
-                        "bsub -q 'BatchXL' -J '" + name_job + "' batchscript.csh\n"
-                    )
-                    startscript += "cd ..\n"
-
-                client = paramiko.SSHClient()
-                client.load_system_host_keys()
-                client.connect(FTP_SERVER, 22, username, passwd)
-
-                with client.open_sftp() as sftp:
-                    sftp.chdir("work")
-
-                    with sftp.open("startskript.csh", "at") as sftp_file:
-                        sftp_file.write(startscript)
-                        sftp_file.close()
-                    sftp.chmod("startskript.csh", stat.S_IRWXU)
-                    sftp.close()
-
-            folderlist.append(name_job)
+            simulate_docker(nameOfConfigFile, nameOfJob, ftype, datafile)
+            folderlist.append(nameOfJob)
 
         if not external:
             return templates.TemplateResponse(
@@ -146,8 +95,6 @@ def run_simulation(
                 status_code=200,
                 media_type="application/json",
             )
-    else:
-        raise HTTPException(status_code=404, detail="Input not given!")
 
 
 @app.post("/check/{token}")
