@@ -100,16 +100,37 @@ def run_simulation(request: Request, input: list = None, external=False) -> Resp
 @app.post("/check/{token}")
 async def check_container(token: str):
     # Verbindung zum Docker-Clienten herstellen (Server/Desktop Version)
-    docker_client = docker.from_env()
-    docker_container = docker_client.containers.get(token)
+    try: 
+        client = docker.from_env()
+        container = client.containers.get(token)
+    
 
-    if docker_container.status == "exited":
-        return_status = "DONE"
-    else:
-        return_status = "PENDING"
+        print("State of the Container")
+        print("State:", container.attrs["State"]["Status"])
+        print("State:", container.attrs["State"]["Running"])
+        print("State:", container.attrs["State"]["Error"])
+        print("State:", container.attrs["State"]["ExitCode"])
 
-    return JSONResponse(
-        content={"status": return_status, "token": token},
-        status_code=200,
-        media_type="application/json",
-    )
+        if container.attrs["State"]["Running"] is True:
+            return_status = "PENDING"
+        else:
+            if container.attrs["State"]["ExitCode"] == 0:
+                return_status = "DONE"
+                payload = ""
+            else:
+                return_status = "ERROR"
+                payload = container.attrs["State"]["Error"]
+
+        return JSONResponse(
+            content={"status": return_status, "token": token, "addpayload": payload},
+            status_code=200,
+            media_type="application/json",
+        )
+    except:
+        return JSONResponse(
+            content={"status": "ERROR", "token": token, "addpayload": "Container not found!"},
+            status_code=200,
+            media_type="application/json",
+        )
+
+    
