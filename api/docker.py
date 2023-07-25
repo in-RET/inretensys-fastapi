@@ -32,6 +32,8 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
 
     # reload the system to get the solvertype
     reload_file = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
+    print(reload_file)
+
     if reload_file.find(".json") > 0:
         xf = open(reload_file, "rt")
         model_dict = json.load(xf)
