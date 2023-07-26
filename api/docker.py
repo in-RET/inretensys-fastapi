@@ -49,10 +49,10 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
     volumes_dict = {pathOfExternalWorkDir: {"bind": pathOfInternalWorkDir, "mode": "rw"}}
 
     if model.solver == Solver.gurobi:
-        IMAGE_TAG = "inretensys:0.2a5-gurobi"
+        IMAGE_TAG = "inretensys:0.2a6-gurobi"
         volumes_dict[licensepath] = {"bind": "/opt/gurobi/gurobi.lic", "mode": "ro"}
     elif model.solver == Solver.cbc:
-        IMAGE_TAG = "inretensys:0.2a5-cbc"
+        IMAGE_TAG = "inretensys:0.2a6-cbc"
     else:
         raise Exception("Solver not implemented yet.")
 
