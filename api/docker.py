@@ -13,7 +13,7 @@ from fastapi.exceptions import HTTPException
 from .constants import *
 
 
-def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
+def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file, req_from_website=False):
     pathOfInternalWorkDir = "/app/working"
     pathOfDockerWorkDir = os.path.join(pathOfInternalWorkDir, nameOfFolder)
     pathOfExternalWorkDir = os.path.join(LOCAL_STORAGE_DIR, nameOfFolder)
@@ -22,11 +22,12 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
     licensepath = LICENSE_PATH
     pathOfConfigfile = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
 
-    if ftype == FTYPE_JSON:
-        # Decoding for Website?!
+    if req_from_website and ftype == FTYPE_JSON:
         savefile = open(pathOfConfigfile, "wt")
-    elif ftype == FTYPE_BINARY:
+    elif ftype == FTYPE_JSON:
         savefile = open(pathOfConfigfile, "wb")
+    else:
+        raise Exception("Fileformat ist not valid!")
     savefile.write(file)
     savefile.close()
 
@@ -34,18 +35,18 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file):
     reload_file = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
     print(reload_file)
 
-    if reload_file.find(".json") > 0:
-        xf = open(reload_file, "rt")
-        model_dict = json.load(xf)
-        model = InRetEnsysModel(**model_dict)
-        xf.close()
-    elif reload_file.find(".bin") > 0:
-        xf = open(reload_file, "rb")
-        model = pickle.load(xf)
-        xf.close()
+    if req_from_website and ftype == FTYPE_JSON:
+        MODE = "rt"   
+    elif ftype == FTYPE_JSON:
+        MODE = "rb"
     else:
         raise Exception("Fileformat is not valid!")
 
+    xf = open(reload_file, MODE)
+    model_dict = json.load(xf)
+    model = InRetEnsysModel(**model_dict)
+    xf.close()
+    
     volumes_dict = {pathOfExternalWorkDir: {"bind": pathOfInternalWorkDir, "mode": "rw"}}
 
     if model.solver == Solver.gurobi:

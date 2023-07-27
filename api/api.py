@@ -77,12 +77,9 @@ def run_simulation(request: Request, input: list = None, external=False) -> Resp
             while os.path.exists(os.path.join(workdir, nameOfJob)):
                 nameOfJob = generate_random_folder()
 
-            if ftype == FTYPE_JSON:
-                nameOfConfigFile = "config.json"
-            elif ftype == FTYPE_BINARY:
-                nameOfConfigFile = "config.bin"
+            nameOfConfigFile = "config.json"
 
-            simulate_docker(nameOfConfigFile, nameOfJob, ftype, datafile)
+            simulate_docker(nameOfConfigFile, nameOfJob, ftype, datafile, external)
             folderlist.append(nameOfJob)
 
         if not external:
