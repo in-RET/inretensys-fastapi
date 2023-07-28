@@ -100,7 +100,8 @@ async def check_container(token: str):
 #    try: 
     client = docker.from_env()
     container = client.containers.get(token)
-    payload = ""
+    error_str:str = ""
+    exitcode:int = None
 
     print("State of the Container")
     print("Status:", container.attrs["State"]["Status"])
@@ -115,10 +116,10 @@ async def check_container(token: str):
             return_status = "DONE"
         else:
             return_status = "ERROR"
-            payload = container.attrs["State"]["Error"]
+            error_str = container.attrs["State"]["Error"]
 
     return JSONResponse(
-        content={"status": return_status, "token": token, "addpayload": payload},
+        content={"status": return_status, "token": token, "error": error_str, "exitcode": exitcode},
         status_code=200,
         media_type="application/json",
     )
