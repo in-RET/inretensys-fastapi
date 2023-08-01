@@ -1,7 +1,6 @@
 import os
-import stat
 import docker
-import paramiko
+import json
 
 from typing import List
 from fastapi import FastAPI, File, Form, Request, Response, UploadFile
@@ -100,8 +99,8 @@ async def check_container(token: str):
 #    try: 
     client = docker.from_env()
     container = client.containers.get(token)
-    error_str:str = ""
-    exitcode:int = None
+    errors = ""
+    exitcode = None
 
     print("State of the Container")
     print("Status:", container.attrs["State"]["Status"])
@@ -116,18 +115,22 @@ async def check_container(token: str):
             return_status = "DONE"
         else:
             return_status = "ERROR"
-            error_str = container.attrs["State"]["Error"]
+            errors = container.attrs["State"]["Error"]
+
+            log_file = os.path.join("/app/working", token, "logs", "config.log")
+
+            if os.path.exists(log_file):
+                xf = open(log_file, 'r')
+                logfile_str = xf.read()
+                xf.close()
+
+                errors += logfile_str
 
     return JSONResponse(
-        content={"status": return_status, "token": token, "error": error_str, "exitcode": exitcode},
+        content={"status": return_status, "token": token, "error": errors, "exitcode": exitcode},
         status_code=200,
         media_type="application/json",
     )
-#    except:
-#        return JSONResponse(
-#            content={"status": "ERROR", "token": token, "addpayload": "Container not found!"},
-#            status_code=200,
-#            media_type="application/json",
-#        )
+
 
     
