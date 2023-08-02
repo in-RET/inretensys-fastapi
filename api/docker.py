@@ -23,18 +23,17 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file, req_from_websit
     pathOfConfigfile = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
 
     if req_from_website and ftype == FTYPE_JSON:
-        savefile = open(pathOfConfigfile, "wt")
+        MODE = "wt"
     elif ftype == FTYPE_JSON:
-        savefile = open(pathOfConfigfile, "wb")
+        MODE = "wb"
     else:
         raise Exception("Fileformat ist not valid!")
+    
+    savefile = open(pathOfConfigfile, MODE)
     savefile.write(file)
     savefile.close()
 
     # reload the system to get the solvertype
-    reload_file = os.path.join(pathOfDockerWorkDir, nameOfConfigFile)
-    print(reload_file)
-
     if req_from_website and ftype == FTYPE_JSON:
         MODE = "rt"   
     elif ftype == FTYPE_JSON:
@@ -42,7 +41,7 @@ def simulate_docker(nameOfConfigFile, nameOfFolder, ftype, file, req_from_websit
     else:
         raise Exception("Fileformat is not valid!")
 
-    xf = open(reload_file, MODE)
+    xf = open(pathOfConfigfile, MODE)
     model_dict = json.load(xf)
     model = InRetEnsysModel(**model_dict)
     xf.close()
