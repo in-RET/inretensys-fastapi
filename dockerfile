@@ -16,11 +16,11 @@ RUN mkdir ${APP_ROOT}
 RUN mkdir ${INSTALL_ROOT}
 
 COPY requirements/requirements.txt ${INSTALL_ROOT}/requirements.txt
-COPY requirements/InRetEnsys-0.2a6-py3-none-any.whl ${INSTALL_ROOT}/InRetEnsys-0.2a6-py3-none-any.whl
+COPY requirements/InRetEnsys-0.2a7-py3-none-any.whl ${INSTALL_ROOT}/InRetEnsys-0.2a7-py3-none-any.whl
 
 RUN pip install --upgrade pip
 RUN pip install -r ${INSTALL_ROOT}/requirements.txt
-RUN pip install --upgrade ${INSTALL_ROOT}/InRetEnsys-0.2a6-py3-none-any.whl
+RUN pip install --upgrade ${INSTALL_ROOT}/InRetEnsys-0.2a7-py3-none-any.whl
 
 
 COPY api ${APP_ROOT}/api/
