@@ -1,15 +1,10 @@
 import json
-import os
-import grp
-import pickle
-import pwd
 
 from InRetEnsys import InRetEnsysModel
 from InRetEnsys.types import Solver
-
-import docker
 from fastapi.exceptions import HTTPException
 
+import docker
 from .constants import *
 
 

@@ -1,21 +1,17 @@
-import os
-import docker
-import json
-
 from typing import List
-from fastapi import FastAPI, File, Form, Request, Response, UploadFile
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+
+from InRetEnsys import *
+from fastapi import FastAPI, File, Request, Response, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
-from InRetEnsys import *
-
-from .helpers import generate_random_folder
-from .docker import simulate_docker
+import docker
 from .constants import *
-
+from .docker import simulate_docker
+from .helpers import generate_random_folder
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="api/static"), name="static")
